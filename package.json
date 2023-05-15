@@ -8,9 +8,16 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^4.5.8",
+    "@hookform/resolvers": "^3.1.0",
+    "@mui/material": "^5.13.0",
     "next": "latest",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.16.4",
