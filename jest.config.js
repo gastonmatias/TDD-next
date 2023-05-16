@@ -13,7 +13,7 @@ const customJestConfig = {
   moduleNameMapper: {
     // Handle CSS imports (with CSS modules)
     // https://jestjs.io/docs/webpack#mocking-css-modules
-    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
+    // '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
     
     // Handle CSS imports (without CSS modules)
     '^.+\\.(css|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
@@ -24,7 +24,10 @@ const customJestConfig = {
      
         // Handle module aliases
         '^@/components/(.*)$': '<rootDir>/components/$1',
-  },  
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(axios)/)"
+  ]  
 }
     
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

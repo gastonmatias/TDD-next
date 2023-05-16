@@ -19,7 +19,9 @@
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"],
       "@/styles/*": ["styles/*"],
-      "@/validators": ["validators"]
+      "@/validators": ["validators"],
+      // "@/mocks/*": ["mocks/*"],
+      "@/*": ["./*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types.d.ts"],
