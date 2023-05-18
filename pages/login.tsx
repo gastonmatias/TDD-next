@@ -37,6 +37,11 @@ const LoginPage = () => {
         	mutation.isLoading && <Spinner/>
         }
 
+        {
+            mutation.isError && 
+            <Typography>Unexpected error, please try again</Typography>
+        }
+
         <form onSubmit={handleSubmit(onSubmit)}>
             <TextField 
                 variant="outlined" 
