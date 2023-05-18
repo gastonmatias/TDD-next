@@ -3,7 +3,16 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
+
 import { Button, TextField, Box, Typography } from '@mui/material'
+import Avatar from '@mui/material/Avatar';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Container from '@mui/material/Container';
 
 import { LoginFormData, loginSchema } from '@/validators';
 import { useLoginMutation } from '@/hooks/useLoginMutation';
@@ -44,43 +53,84 @@ const LoginPage = () => {
 
     return (
     <>
-    <Box>
-        <Typography variant="h1" >Login</Typography>
+    <Container component="main" maxWidth="xs">
         
-        { 
-        	mutation.isLoading && <Spinner/>
-        }
+        {  mutation.isLoading && <Spinner/> }
 
-        {
-            ( mutation.isError )  
+        {/* { ( mutation.isError )   */}
+        { ( true )  
             ? <Typography>{errorMessage}</Typography>
             : null
         }
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField 
-                variant="outlined" 
-                label="email" 
-                {...register("email",{required:true})}
-                helperText={errors.email?.message}
-                />
-
-            <TextField 
-                label="password" 
-                variant="outlined" 
-                {...register("password",{required:true})}
-                helperText={errors.password?.message}
+        <Box
+          sx={{
+            marginTop: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Login
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              autoComplete="email"
+              autoFocus
+              {...register("email",{required:true})}
+              helperText={errors.email?.message}
+              error={!!errors.email}
+              />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              {...register("password",{required:true})}
+              helperText={errors.password?.message}
+              error={!!errors.password}
             />
 
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
             <Button
-                variant='contained' 
-                type='submit'
-                disabled={mutation.isLoading}
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={mutation.isLoading}
             >
-                Login
+              Login
             </Button>
-        </form>
-    </Box>
+            <Grid container>
+              <Grid item xs>
+                <Link href="#" variant="body2">
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
 
     </>
   )
