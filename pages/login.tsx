@@ -8,6 +8,7 @@ import { useLoginMutation } from '@/hooks/useLoginMutation';
 
 // import styles from './login.module.css'
 import { Spinner } from '@/components/ui/Spinner';
+import axios from 'axios';
 
 const LoginPage = () => {
     
@@ -25,7 +26,10 @@ const LoginPage = () => {
         
         // se invoca el mutation y se manda como argumento los mismos params
         // que fueron establecidos a momento de crear el hook
-        mutation.mutate({email,password})
+        mutation.mutate({email,password},{onError(error, variables, context) {
+            // error status code
+
+        },})
     }
 
     return (
@@ -37,9 +41,17 @@ const LoginPage = () => {
         	mutation.isLoading && <Spinner/>
         }
 
-        {
+        {/* {
             mutation.isError && 
             <Typography>Unexpected error, please try again</Typography>
+        } */}
+
+        {
+            ( mutation.isError )  
+            ? axios.isAxiosError(mutation.error) && mutation?.error?.response?.status === 500
+                ? <Typography>Unexpected error, please try again</Typography>
+                : <Typography>The email or password are not correct</Typography>
+            : null
         }
 
         <form onSubmit={handleSubmit(onSubmit)}>
