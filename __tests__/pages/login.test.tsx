@@ -1,8 +1,11 @@
 // import { renderWithProviders } from '@/mocks/renderWithProviders';
-import { renderWithProviders } from '@/mocks/renderWithProviders';
-import LoginPage from '@/pages/login';
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
+import {rest} from 'msw'
+
+import LoginPage from '@/pages/login';
+import { renderWithProviders } from '@/mocks/renderWithProviders';
+import { server } from '@/mocks/server';
 
 // para centralizar acceso de un btn (más facil de mantener a futuros cambios)
 const getLoginBtn = () => screen.getByRole('button',{name: /login/i})
@@ -99,3 +102,31 @@ test('should render a loading indicator when fetching the form', async () => {
   // loading de carga esperado x role progressbar y name loading (aria-label)
   expect(await screen.findByRole('progressbar',{name:/loading/i}))
 })
+
+//! - In a unexpected server error, the form page must display the error message
+//! “Unexpected error, please try again” from the api.
+test.only('should render an error message when API is down', async () => {
+  
+  // simular caida del server de la API.
+  // configurar el server de MSW para que se caiga
+  server.use(
+    rest.post('/login', (req, res, ctx) => res(
+      ctx.delay(), // delay necesario para optimo testing
+      ctx.status(500) 
+    )),    
+  )
+
+  renderWithProviders(<LoginPage/>)
+
+  const email = screen.getByLabelText(/email/i)
+  const password = screen.getByLabelText(/password/i)
+  await userEvent.type(email, 'peter_parker@gmail.com')
+  await userEvent.type(password, '123456789')
+
+  await userEvent.click(getLoginBtn())
+
+  expect(
+    await screen.findByText(/Unexpected error, please try again/i)
+  ).toBeInTheDocument()
+})
+
