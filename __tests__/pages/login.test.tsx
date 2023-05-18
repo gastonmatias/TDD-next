@@ -1,5 +1,5 @@
 // import { renderWithProviders } from '@/mocks/renderWithProviders';
-import {screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import {rest} from 'msw'
 
@@ -10,13 +10,13 @@ import { server } from '@/mocks/server';
 // para centralizar acceso de un btn (más facil de mantener a futuros cambios)
 const getLoginBtn = () => screen.getByRole('button',{name: /login/i})
 
-const mockServerWithError = () => {
+const mockServerWithError = (statusCode: number) => {
   // simular caida del server de la API.
   // configurar el server de MSW para que se caiga
   server.use(
     rest.post('/login', (req, res, ctx) => res(
       ctx.delay(), // delay necesario para optimo testing
-      ctx.status(500) 
+      ctx.status(statusCode) 
     )),    
   )  
 }
@@ -114,8 +114,8 @@ test('should render a loading indicator when fetching the form', async () => {
 //! “Unexpected error, please try again” from the api.
 test('should render an error message when API is down', async () => {
   
-  // simular caida del server de la API  
-  mockServerWithError()
+  // simular caida del server de la API (code 500)
+  mockServerWithError(500)
 
   renderWithProviders(<LoginPage/>)
   
@@ -126,3 +126,18 @@ test('should render an error message when API is down', async () => {
   ).toBeInTheDocument()
 })
 
+//- In the invalid credentials response, the form page must display the error
+//  message “The email or password are not correct” from the api.
+test('should show an error message when credentials are not correct', async () => {
+  renderWithProviders(<LoginPage/>)
+
+  // simular error del cliente en interaccion con api (code 400)
+  mockServerWithError(401)
+
+  await fillAndSendLoginForm('bruce_wayne@live.com','batman123')
+
+  expect(
+    await screen.findByText(/The email or password are not correct/i)
+  ).toBeInTheDocument()
+
+})
