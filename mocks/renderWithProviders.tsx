@@ -9,6 +9,8 @@ export const renderWithProviders = (ui: ReactNode) => {
 
     const queryClient = new QueryClient()
 
+    queryClient.clear() // resetea cache, util para ambiente testing
+
     render (
       
       <QueryClientProvider client={queryClient}>
@@ -16,3 +18,8 @@ export const renderWithProviders = (ui: ReactNode) => {
       </QueryClientProvider>
     )
 }
+
+// nota: 
+// react-query almacena en cache los request a API repetitivas,
+// cosa qe es contraproducente en ambiente testing.
+// para evitar que suceda eso se debe usar el metodo clear de queryClient

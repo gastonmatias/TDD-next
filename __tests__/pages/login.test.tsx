@@ -76,3 +76,26 @@ test('it should disable/enable submit button on fetching/not fetching data', asy
   await waitFor(() => expect(getLoginBtn()).toBeDisabled())
 
 })
+
+//! - There should be a loading indicator at the top of the form while it is fetching
+test.only('should render a loading indicator when fetching the form', async () => {
+
+  renderWithProviders(<LoginPage/>)
+  
+  // asegurarse de qe NO está el indicador de carga ANTES de gatillar btn login
+  expect(
+    screen.queryByRole('progressbar',{name:/loading/i})
+  ).not.toBeInTheDocument()
+  
+  // form exitoso, paso previo necesario para desplegar spinner
+  const email = screen.getByLabelText(/email/i)
+  const password = screen.getByLabelText(/password/i)
+  await userEvent.type(email,'peter@gmail.com')
+  await userEvent.type(password,'1234567')
+  
+  // gatillar evento login
+  await userEvent.click(getLoginBtn())
+  
+  // loading de carga esperado x role progressbar y name loading (aria-label)
+  expect(await screen.findByRole('progressbar',{name:/loading/i}))
+})
