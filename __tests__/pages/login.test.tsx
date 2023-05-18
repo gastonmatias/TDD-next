@@ -10,6 +10,31 @@ import { server } from '@/mocks/server';
 // para centralizar acceso de un btn (más facil de mantener a futuros cambios)
 const getLoginBtn = () => screen.getByRole('button',{name: /login/i})
 
+const mockServerWithError = () => {
+  // simular caida del server de la API.
+  // configurar el server de MSW para que se caiga
+  server.use(
+    rest.post('/login', (req, res, ctx) => res(
+      ctx.delay(), // delay necesario para optimo testing
+      ctx.status(500) 
+    )),    
+  )  
+}
+
+const fillAndSendLoginForm = async (email: string, password: string) => {
+  const emailInput = screen.getByLabelText(/email/i)
+  const passwordInput = screen.getByLabelText(/password/i)
+
+  // en un principio btn login DEBE estar enable
+  expect(getLoginBtn()).not.toBeDisabled()
+
+  await userEvent.type(emailInput,email)
+  await userEvent.type(passwordInput,password)
+
+  //gatillar el evento click login
+  await userEvent.click(getLoginBtn())
+}
+
 //! there must be a login page ----------------------------------------------
 test('should render the login title', () => {
 
@@ -61,23 +86,11 @@ test('it should validate the email format (@ & domain value)', async() => {
 test('it should disable/enable submit button on fetching/not fetching data', async() => {
   renderWithProviders(<LoginPage/>)
 
-  const email = screen.getByLabelText(/email/i)
-  const password = screen.getByLabelText(/password/i)
-
-  // en un principio DEBE estar enable
-  expect(getLoginBtn()).not.toBeDisabled()
-
-  // se debe tener un form con campos validos
-  // y ESPERAR a que sean validos
-  await userEvent.type(email,'peter@gmail.com')
-  await userEvent.type(password,'1234567')
-
-  //gatillar el evento click login
-  userEvent.click(getLoginBtn())
-
+  // se debe tener un form con campos validos y ESPERAR a que sean validos
+  await fillAndSendLoginForm('tony_stark@gmail.com','12345678')
+  
   // mientras hace fetch se btn login debe estan deshabilitado
   await waitFor(() => expect(getLoginBtn()).toBeDisabled())
-
 })
 
 //! - There should be a loading indicator at the top of the form while it is fetching
@@ -91,13 +104,7 @@ test('should render a loading indicator when fetching the form', async () => {
   ).not.toBeInTheDocument()
   
   // form exitoso, paso previo necesario para desplegar spinner
-  const email = screen.getByLabelText(/email/i)
-  const password = screen.getByLabelText(/password/i)
-  await userEvent.type(email,'peter@gmail.com')
-  await userEvent.type(password,'1234567')
-  
-  // gatillar evento login
-  await userEvent.click(getLoginBtn())
+  await fillAndSendLoginForm('peter_parker@hotmail.com','asd454s4')
   
   // loading de carga esperado x role progressbar y name loading (aria-label)
   expect(await screen.findByRole('progressbar',{name:/loading/i}))
@@ -105,25 +112,14 @@ test('should render a loading indicator when fetching the form', async () => {
 
 //! - In a unexpected server error, the form page must display the error message
 //! “Unexpected error, please try again” from the api.
-test.only('should render an error message when API is down', async () => {
+test('should render an error message when API is down', async () => {
   
-  // simular caida del server de la API.
-  // configurar el server de MSW para que se caiga
-  server.use(
-    rest.post('/login', (req, res, ctx) => res(
-      ctx.delay(), // delay necesario para optimo testing
-      ctx.status(500) 
-    )),    
-  )
+  // simular caida del server de la API  
+  mockServerWithError()
 
   renderWithProviders(<LoginPage/>)
-
-  const email = screen.getByLabelText(/email/i)
-  const password = screen.getByLabelText(/password/i)
-  await userEvent.type(email, 'peter_parker@gmail.com')
-  await userEvent.type(password, '123456789')
-
-  await userEvent.click(getLoginBtn())
+  
+  await fillAndSendLoginForm('gwen_stacy@live.com','gwen45678')
 
   expect(
     await screen.findByText(/Unexpected error, please try again/i)
