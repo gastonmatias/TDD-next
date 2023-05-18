@@ -6,6 +6,9 @@ import { Button, TextField, Box, Typography } from '@mui/material'
 import { LoginFormData, loginSchema } from '@/validators';
 import { useLoginMutation } from '@/hooks/useLoginMutation';
 
+// import styles from './login.module.css'
+import { Spinner } from '@/components/ui/Spinner';
+
 const LoginPage = () => {
     
     const mutation = useLoginMutation()
@@ -31,10 +34,7 @@ const LoginPage = () => {
         <Typography variant="h1" >Login</Typography>
         
         { 
-        	mutation.isLoading && 
-        	  <div role="progressbar" aria-label='loading'>
-        	    <h3>Title of my progressbar</h3>
-            </div>
+        	mutation.isLoading && <Spinner/>
         }
 
         <form onSubmit={handleSubmit(onSubmit)}>

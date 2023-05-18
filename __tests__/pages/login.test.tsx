@@ -78,7 +78,7 @@ test('it should disable/enable submit button on fetching/not fetching data', asy
 })
 
 //! - There should be a loading indicator at the top of the form while it is fetching
-test.only('should render a loading indicator when fetching the form', async () => {
+test('should render a loading indicator when fetching the form', async () => {
 
   renderWithProviders(<LoginPage/>)
   

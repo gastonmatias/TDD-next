@@ -5,18 +5,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render } from "@testing-library/react"
 import { ReactNode } from "react"
 
+export const queryClient = new QueryClient()
+
 export const renderWithProviders = (ui: ReactNode) => {
 
-    const queryClient = new QueryClient()
-
-    queryClient.clear() // resetea cache, util para ambiente testing
-
-    render (
+  render (
       
-      <QueryClientProvider client={queryClient}>
-        {ui}
-      </QueryClientProvider>
-    )
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>
+  )
 }
 
 // nota: 
