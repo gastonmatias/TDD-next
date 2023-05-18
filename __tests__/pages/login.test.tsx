@@ -7,6 +7,10 @@ import LoginPage from '@/pages/login';
 import { renderWithProviders } from '@/mocks/renderWithProviders';
 import { server } from '@/mocks/server';
 
+// se importa baseURL solo x tema pero de igual manera sera reemplazada
+// por el mock configurado en jest.setup.js
+import { baseURL } from '@/config'; 
+
 // para centralizar acceso de un btn (más facil de mantener a futuros cambios)
 const getLoginBtn = () => screen.getByRole('button',{name: /login/i})
 
@@ -14,7 +18,7 @@ const mockServerWithError = (statusCode: number) => {
   // simular caida del server de la API.
   // configurar el server de MSW para que se caiga
   server.use(
-    rest.post('/login', (req, res, ctx) => res(
+    rest.post(`${baseURL}/login`, (req, res, ctx) => res(
       ctx.delay(), // delay necesario para optimo testing
       ctx.status(statusCode) 
     )),    
