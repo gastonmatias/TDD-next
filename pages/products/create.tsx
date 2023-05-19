@@ -1,5 +1,5 @@
-import { Typography, TextField, MenuItem, FormControl, InputLabel, Select, Button } from "@mui/material"
 import { NextPage } from "next"
+import { Typography, TextField, FormControl, InputLabel, Select } from "@mui/material"
 
 const CreateProductPage: NextPage = () => {
   return (
@@ -21,7 +21,7 @@ const CreateProductPage: NextPage = () => {
             <InputLabel htmlFor="type" id="type">Type</InputLabel>
 
             <Select
-              native
+              native //! IMPORTANTE PARA QUE JEST RECONOZCA LOS OPTIONS
               aria-labelledby="type"
               labelId="type"
               role="type-select"

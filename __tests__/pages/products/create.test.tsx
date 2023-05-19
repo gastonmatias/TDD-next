@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event';
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
     
+    beforeEach(() => render(<CreateProductPage/>))
+
     //! 1) Acceptance Criteria (AC): There must be a create product form page.----
     it('should render a create product form page', () => {
-      render(<CreateProductPage/>)  
-
       expect(
         screen.getByRole('heading',{name: /create product/i})
       ).toBeInTheDocument()
@@ -19,8 +19,6 @@ describe('when the form is mounted', () => {
     //! name, size, type (electronic,furniture, clothing)
     it.only('must have the fields name, size and select type', async() => {
         
-        render(<CreateProductPage/>)
-
         const nameInput = screen.getByLabelText(/name/i,{selector:'input'})
         const sizeInput = screen.getByLabelText(/size/i,{selector:'input'})
         const typeSelect = screen.getByTestId('type-select')
