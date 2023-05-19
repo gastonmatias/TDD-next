@@ -1,5 +1,6 @@
 import CreateProductPage from "@/pages/products/create"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, getByRole, queryByText, render, screen } from "@testing-library/react"
+import userEvent from '@testing-library/user-event';
 
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
@@ -8,7 +9,33 @@ describe('when the form is mounted', () => {
     it('should render a create product form page', () => {
       render(<CreateProductPage/>)  
 
-      expect(screen.queryByText(/create product/i)).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading',{name: /create product/i})
+      ).toBeInTheDocument()
+    
     })
 
+    //! 2.1) AC: The form must have the following fields: 
+    //! name, size, type (electronic,furniture, clothing)
+    it.only('must have the fields name, size and select type', async() => {
+        
+        render(<CreateProductPage/>)
+
+        const nameInput = screen.getByLabelText(/name/i,{selector:'input'})
+        const sizeInput = screen.getByLabelText(/size/i,{selector:'input'})
+        const typeSelect = screen.getByTestId('type-select')
+
+        const electronicOption = screen.queryByText(/electronic/i)
+        const furnitureOption = screen.queryByText(/furniture/i)
+        const clothingOption = screen.queryByText(/clothing/i)
+
+        expect(nameInput).toBeInTheDocument()
+        expect(sizeInput).toBeInTheDocument()
+        expect(typeSelect).toBeInTheDocument()
+        expect(electronicOption).toBeInTheDocument()
+        expect(furnitureOption).toBeInTheDocument()
+        expect(clothingOption).toBeInTheDocument()
+        
+        // screen.debug()
+    })
 })
