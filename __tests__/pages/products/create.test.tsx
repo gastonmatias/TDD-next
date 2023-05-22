@@ -1,11 +1,11 @@
 import CreateProductPage from "@/pages/products/create"
 import { fireEvent, render, screen } from "@testing-library/react"
 
+// en scope global, se ejecuta para cada test
+beforeEach(() => render(<CreateProductPage/>))
+
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
-    
-    beforeEach(() => render(<CreateProductPage/>))
-
     //! 1) Acceptance Criteria (AC): There must be a create product form page.----
     it('should render a create product form page', () => {
       expect(
@@ -52,7 +52,6 @@ describe(('when the user submits the form without values'),() => {
   //!   must display required messages as the format: _“The [field name] is
   //!   required”_ aside of the proper field.
   it('should display validations messages', () => {
-    render(<CreateProductPage/>)
     
     // msjes validacion NO Presentes antes de submitear
     expect(screen.queryByText(/The name is required/i)).not.toBeInTheDocument()
@@ -77,8 +76,6 @@ describe(('when the user submits the form without values'),() => {
 describe('when the user blurs an empty field',() => {
   it('should display the validation message for the input name', () => {
     
-    render(<CreateProductPage/>)
-
     // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
     const nameInput = screen.getByLabelText(/name/i)
     fireEvent.blur(nameInput,{ target: {name:'name',value:''}})
@@ -90,8 +87,6 @@ describe('when the user blurs an empty field',() => {
   
   it('should display the validation message for the input size', () => {
     
-    render(<CreateProductPage/>)
-
     // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
     const nameInput = screen.getByLabelText(/size/i)
     fireEvent.blur(nameInput,{ target: {name:'size',value:''}})
