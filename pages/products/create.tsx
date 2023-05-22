@@ -1,6 +1,7 @@
+import {  useState } from "react"
 import { NextPage } from "next"
+
 import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
-import { FormEvent, HtmlHTMLAttributes, useState } from "react"
 
 const CreateProductPage: NextPage = () => {
   
@@ -39,6 +40,15 @@ const CreateProductPage: NextPage = () => {
     }
     
   }
+
+  // event blur se gatilla cuando un elemento ha perdido su foco
+  const handleBlur = (e:any) => {
+    const {name, value} = e.target
+    setFormErrors({
+      ...formErrors, 
+      [name]:value.length ? '' : `The ${name} is required`
+    })
+  }
   
   return (
     <>
@@ -48,13 +58,17 @@ const CreateProductPage: NextPage = () => {
         <TextField
           id="name"
           label="name"
+          name="name"
           helperText={formErrors.name}
+          onBlur={handleBlur}
           />
 
         <TextField
           id="size"
           label="size"
+          name="size"
           helperText={formErrors.size}
+          onBlur={handleBlur}
           />
 
         <FormControl fullWidth>
@@ -66,7 +80,6 @@ const CreateProductPage: NextPage = () => {
               labelId="type"
               id="type"
               label="Type"
-              // helperText={formErrors.size}
               inputProps={{
                 name: 'type',
                 id:'type',
