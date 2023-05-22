@@ -48,6 +48,9 @@ describe('when the form is mounted', () => {
 
 describe(('when the user submits the form without values'),() => {
 
+  //! 3) If the user leaves empty fields and clicks the submit button, the form page
+  //!   must display required messages as the format: _“The [field name] is
+  //!   required”_ aside of the proper field.
   it('should display validations messages', () => {
     render(<CreateProductPage/>)
     
@@ -64,7 +67,37 @@ describe(('when the user submits the form without values'),() => {
     expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
     expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
     expect(screen.queryByText(/The type is required/i)).toBeInTheDocument()
-
+    
   })
+  
+})
 
+//! If the user blurs a field that is empty, then the form must display the
+//! required message for that field.
+describe('when the user blurs an empty field',() => {
+  it('should display the validation message for the input name', () => {
+    
+    render(<CreateProductPage/>)
+
+    // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
+    const nameInput = screen.getByLabelText(/name/i)
+    fireEvent.blur(nameInput,{ target: {name:'name',value:''}})
+    
+    // resultado esperado luego del blur
+    expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
+    
+  })
+  
+  it('should display the validation message for the input size', () => {
+    
+    render(<CreateProductPage/>)
+
+    // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
+    const nameInput = screen.getByLabelText(/size/i)
+    fireEvent.blur(nameInput,{ target: {name:'size',value:''}})
+    
+    // resultado esperado luego del blur
+    expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
+    
+  })
 })
