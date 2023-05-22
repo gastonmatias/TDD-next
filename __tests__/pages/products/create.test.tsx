@@ -17,7 +17,7 @@ describe('when the form is mounted', () => {
 
     //! 2.1) AC: The form must have the following fields: 
     //! name, size, type (electronic,furniture, clothing)
-    it.only('must have the fields name, size and select type', async() => {
+    it('must have the fields name, size and select type', () => {
         
         const nameInput = screen.getByLabelText(/name/i,{selector:'input'})
         const sizeInput = screen.getByLabelText(/size/i,{selector:'input'})
@@ -36,4 +36,13 @@ describe('when the form is mounted', () => {
         
         // screen.debug()
     })
+
+  // //! 2.1) AC: The form must have a submit button
+  it('must have the button submit', () => {
+    
+    const btnSubmit = screen.getByRole('button',{name: /submit/i})
+
+    expect(btnSubmit).toBeInTheDocument()
+
+  })
 })
