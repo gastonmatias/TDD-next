@@ -1,6 +1,5 @@
 import CreateProductPage from "@/pages/products/create"
-import { fireEvent, getByRole, queryByText, render, screen } from "@testing-library/react"
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen } from "@testing-library/react"
 
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
@@ -37,7 +36,7 @@ describe('when the form is mounted', () => {
         // screen.debug()
     })
 
-  // //! 2.1) AC: The form must have a submit button
+  // //! 2.2) AC: The form must have a submit button
   it('must have the button submit', () => {
     
     const btnSubmit = screen.getByRole('button',{name: /submit/i})
@@ -45,4 +44,23 @@ describe('when the form is mounted', () => {
     expect(btnSubmit).toBeInTheDocument()
 
   })
+})
+
+describe(('when the user submits the form without values'),() => {
+
+  it('should display validations messages', () => {
+    render(<CreateProductPage/>)
+
+    expect(screen.queryByText(/The name is required/i)).not.toBeInTheDocument()
+    
+    const btnSubmit = screen.getByRole('button',{name:/submit/i})
+
+    fireEvent.click(btnSubmit)
+
+    expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
+    expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
+    expect(screen.queryByText(/The type is required/i)).toBeInTheDocument()
+
+  })
+
 })
