@@ -13,14 +13,6 @@ const CreateProductPage: NextPage = () => {
   const handleSubmit = (e:any) => {
     e.preventDefault()
 
-    // const {name, size, type} = e.target.elements as HTMLFormControlsCollection
-    // const {name, size, type} = (e.target as HTMLFormElement).elements
-    
-    // const form = e.currentTarget as HTMLInputElement
-    // const form = e.target as HTMLInputElement
-    
-    // const {name, size, type} = form.elements!
-    
     const {name, size, type} = e.target.elements
     
     // x la naturaleza asincrona del useState, es necesario utilizar el prevState,

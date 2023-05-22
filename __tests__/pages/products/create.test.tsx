@@ -50,13 +50,17 @@ describe(('when the user submits the form without values'),() => {
 
   it('should display validations messages', () => {
     render(<CreateProductPage/>)
-
-    expect(screen.queryByText(/The name is required/i)).not.toBeInTheDocument()
     
+    // msjes validacion NO Presentes antes de submitear
+    expect(screen.queryByText(/The name is required/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/The size is required/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/The type is required/i)).not.toBeInTheDocument()
+    
+    // gatillar btn submit
     const btnSubmit = screen.getByRole('button',{name:/submit/i})
-
     fireEvent.click(btnSubmit)
 
+    // se espera qe esten presentes los msjes de validacion
     expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
     expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
     expect(screen.queryByText(/The type is required/i)).toBeInTheDocument()
