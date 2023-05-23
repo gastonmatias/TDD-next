@@ -2,17 +2,24 @@ import {  useState } from "react"
 import { NextPage } from "next"
 
 import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
+import { baseURL } from "@/config";
+import axios from "axios";
+import { createProductService } from "@/services/createProduct";
 
 const CreateProductPage: NextPage = () => {
   
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
   const [formErrors, setFormErrors] = useState({
     name:'',
     size:'',
     type:'',
   });
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault()
+
+    setIsSaving(true)
 
     const {name, size, type} = e.target.elements
     
@@ -38,7 +45,15 @@ const CreateProductPage: NextPage = () => {
         )
       )
     }
-    
+
+    await createProductService('cafe','grande',1)
+
+    // await fetch(`${baseURL}/products`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({})
+    // })
+
+    setIsSaving(false)
   }
 
   // event blur se gatilla cuando un elemento ha perdido su foco
@@ -96,7 +111,12 @@ const CreateProductPage: NextPage = () => {
               <FormHelperText>{formErrors.type}</FormHelperText>
             }
 
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              >
+                Submit
+            </Button>
         </FormControl>
 
     </form>
