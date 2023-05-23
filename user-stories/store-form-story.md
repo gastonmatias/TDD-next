@@ -7,19 +7,19 @@ administrating my products.
 
 **Acceptance Criteria (AC):**
 
-- There must be a create product form page.
-- The form must have the following fields: name, size, type (electronic,
+- 1) There must be a create product form page.
+- 2) The form must have the following fields: name, size, type (electronic,
   furniture, clothing) and a submit button.
 - All the fields are required.
-  - If the user leaves empty fields and clicks the submit button, the form page
+  - 3) If the user leaves empty fields and clicks the submit button, the form page
     must display required messages as the format: _“The [field name] is
     required”_ aside of the proper field.
-  - If the user blurs a field that is empty, then the form must display the
+  - 4) If the user blurs a field that is empty, then the form must display the
     required message for that field.
 - The form must send the data to a backend endpoint service.
-  - The submit button should be disabbled while the form page is fetching the
+  - 5) The submit button should be disabbled while the form page is fetching the
     data. After fetching, the submit button does not have to be disabled.
-  - In the success path, the form page must display the success message
+  - 6) In the success path, the form page must display the success message
     _“Product stored”_ and clean the fields values.
   - In a server error, the form page must display the error message _“Unexpected
     error, please try again”_.

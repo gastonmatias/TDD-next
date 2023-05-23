@@ -5,6 +5,7 @@ import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHel
 import axios from "axios";
 import { createProductService } from "@/services/createProduct";
 import { HtmlProps } from "next/dist/shared/lib/html-context";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 // interface IFormCreate{
 //   name: string,
@@ -31,68 +32,51 @@ const CreateProductPage: NextPage = () => {
     type:'',
   });
 
-  const validateField = ({name, value}:IValidateField) => {
-    // x la naturaleza asincrona del useState, es necesario utilizar el prevState,
-    // para qe la actualizacion del state sea correcta
-    setFormErrors((prevState) => (
-        { ...prevState, 
-          [name]: value.length 
-            ? '' // msje para campo valido
-            :`The ${name} is required` // msje para campo INvalido
-        }
-      )
-    )
-  }
+  const {register, handleSubmit, formState:{errors}} = useForm()
 
-  const validateForm = ({name, size, type}: IFormCreate) => {
-    validateField({name:'name', value: name})
-    validateField({name:'size', value: size})
-    validateField({name:'type', value: type})
-  }
+  const [name, setName] = useState<string>('');
+  const [size, setSize] = useState<string>('');
+  const [type, setType] = useState<string>('');
 
-  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    
     setIsSaving(true)
 
-    const form = e.target.elements as HTMLFormControlsCollection
-
-    const name = form.namedItem('name') as HTMLInputElement;
-    const size = form.namedItem('size') as HTMLInputElement;
-    const type = form.namedItem('type') as HTMLInputElement;
-
-    validateForm({name:name.value, size:size.value, type:type.value})
-
-    await createProductService('cafe','grande',1)
+    console.log(data);
+    const {name, size, type} = data
+    // await createProductService('cafe','grande','1')
+    await createProductService(name, size, type)
 
     setIsSaving(false)
   }
-
+  
   // event blur se gatilla cuando un elemento ha perdido su foco
   const handleBlur = (e:any) => {
     const {name, value} = e.target
-    validateField({name,value})
   }
   
   return (
     <>
     <Typography variant="h1" color="initial">Create Product</Typography>
     
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           id="name"
           label="name"
-          name="name"
+          // name="name"
+          // helperText={formErrors.name}
           helperText={formErrors.name}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
+          {...register("name")}
           />
 
         <TextField
           id="size"
           label="size"
-          name="size"
+          // name="size"
           helperText={formErrors.size}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
+          {...register("size")}
           />
 
         <FormControl fullWidth>
@@ -104,11 +88,13 @@ const CreateProductPage: NextPage = () => {
               labelId="type"
               id="type"
               label="Type"
+              {...register("type")}
               inputProps={{
                 name: 'type',
                 id:'type',
                 "data-testid": 'type-select'
               }}
+              // onChange={}
             >
               <option aria-label="None" value=""></option>
               <option value="electronic">electronic</option>

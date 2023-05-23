@@ -75,7 +75,7 @@ describe(('when the user submits the form without values'),() => {
   
 })
 
-//! If the user blurs a field that is empty, then the form must display the
+//! 4) If the user blurs a field that is empty, then the form must display the
 //! required message for that field.
 describe('when the user blurs an empty field',() => {
   it('should display the validation message for the input name', () => {
@@ -99,7 +99,11 @@ describe('when the user blurs an empty field',() => {
   })
 })
 
+//! The form must send the data to a backend endpoint service.
 describe('When the user submits the form',() => {
+  
+  //! 5) The submit button should be disabbled while the form page is fetching the
+  //! data. After fetching, the submit button does not have to be disabled.
   it('should the submit button be disable until the request is done ', async () => {
     
     // en un comienzo se espera qe el btn submit SI este habilitado
@@ -114,4 +118,18 @@ describe('When the user submits the form',() => {
       
     await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
   })
+
+})
+
+//! The form must send the data to a backend endpoint service.
+describe('When the user submits the form CORRECTLY', () => {
+  //!  In the success path, the form page must display the success message
+  //! “Product stored” and clean the fields values.
+  it('the form must display a success message & clean the fields values', async () => {
+    
+    
+
+  })
+
+
 })
