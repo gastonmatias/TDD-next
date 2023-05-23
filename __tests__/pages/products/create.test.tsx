@@ -1,5 +1,8 @@
+import { baseURL } from "@/config"
+import { server } from "@/mocks/server"
 import CreateProductPage from "@/pages/products/create"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { rest } from "msw"
 
 // en scope global, se ejecuta para cada test
 beforeEach(() => render(<CreateProductPage/>))
@@ -94,5 +97,30 @@ describe('when the user blurs an empty field',() => {
     // resultado esperado luego del blur
     expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
     
+  })
+})
+
+describe('When the user submits the form',() => {
+  it('should the submit button be disable until the request is done ', async () => {
+    
+    // en un comienzo se espera qe el btn submit SI este habilitado
+    const btnSubmit = screen.getByRole('button',{name:/submit/i})
+    expect(btnSubmit).not.toBeDisabled()
+    
+    // gatillar evento click
+    fireEvent.click(btnSubmit)
+    
+    // se espera qe el btn este deshabilitado
+    expect(btnSubmit).toBeDisabled()
+    
+    // request post new product
+    await server.use(
+      rest.post(`${baseURL}/products`, (req,res,ctx) => {
+        return res(ctx.status(201))
+      })
+      )
+      
+    await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
+
   })
 })
