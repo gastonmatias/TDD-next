@@ -7,4 +7,9 @@ export const handlers = [
     ctx.delay(), // delay necesario para optimo testing
     ctx.status(200)
   )),
+  
+  rest.post(`${baseURL}/products`, (req,res,ctx) => {
+    return res(ctx.status(201))
+  })
+
 ]

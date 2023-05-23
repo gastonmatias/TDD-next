@@ -54,7 +54,7 @@ describe(('when the user submits the form without values'),() => {
   //! 3) If the user leaves empty fields and clicks the submit button, the form page
   //!   must display required messages as the format: _“The [field name] is
   //!   required”_ aside of the proper field.
-  it('should display validations messages', () => {
+  it('should display validations messages', async() => {
     
     // msjes validacion NO Presentes antes de submitear
     expect(screen.queryByText(/The name is required/i)).not.toBeInTheDocument()
@@ -70,6 +70,7 @@ describe(('when the user submits the form without values'),() => {
     expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
     expect(screen.queryByText(/The type is required/i)).toBeInTheDocument()
     
+    await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
   })
   
 })
@@ -85,18 +86,16 @@ describe('when the user blurs an empty field',() => {
     
     // resultado esperado luego del blur
     expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
-    
   })
   
   it('should display the validation message for the input size', () => {
-    
+
     // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
     const nameInput = screen.getByLabelText(/size/i)
     fireEvent.blur(nameInput,{ target: {name:'size',value:''}})
     
     // resultado esperado luego del blur
     expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
-    
   })
 })
 
@@ -112,15 +111,7 @@ describe('When the user submits the form',() => {
     
     // se espera qe el btn este deshabilitado
     expect(btnSubmit).toBeDisabled()
-    
-    // request post new product
-    await server.use(
-      rest.post(`${baseURL}/products`, (req,res,ctx) => {
-        return res(ctx.status(201))
-      })
-      )
       
     await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
-
   })
 })

@@ -1,57 +1,69 @@
-import {  useState } from "react"
+import {  ChangeEvent, ChangeEventHandler, ReactEventHandler, SyntheticEvent, useState } from "react"
 import { NextPage } from "next"
 
 import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
-import { baseURL } from "@/config";
 import axios from "axios";
 import { createProductService } from "@/services/createProduct";
+import { HtmlProps } from "next/dist/shared/lib/html-context";
+
+// interface IFormCreate{
+//   name: string,
+//   size: string,
+//   type: string  
+// }
+interface IFormCreate{
+  name: string,
+  size: string,
+  type: string  
+}
+interface IValidateField{
+  name:  string,
+  value: string,
+}
 
 const CreateProductPage: NextPage = () => {
   
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const [formErrors, setFormErrors] = useState({
+  const [formErrors, setFormErrors] = useState<IFormCreate>({
     name:'',
     size:'',
     type:'',
   });
 
-  const handleSubmit = async (e:any) => {
+  const validateField = ({name, value}:IValidateField) => {
+    // x la naturaleza asincrona del useState, es necesario utilizar el prevState,
+    // para qe la actualizacion del state sea correcta
+    setFormErrors((prevState) => (
+        { ...prevState, 
+          [name]: value.length 
+            ? '' // msje para campo valido
+            :`The ${name} is required` // msje para campo INvalido
+        }
+      )
+    )
+  }
+
+  const validateForm = ({name, size, type}: IFormCreate) => {
+    validateField({name:'name', value: name})
+    validateField({name:'size', value: size})
+    validateField({name:'type', value: type})
+  }
+
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     setIsSaving(true)
 
-    const {name, size, type} = e.target.elements
-    
-    // x la naturaleza asincrona del useState, es necesario utilizar el prevState,
-    // para qe la actualizacion del state sea correcta
-    if (!name.value) {
-      setFormErrors((prevState) => (
-          { ...prevState, name: "The name is required" }
-        )
-      )
-    }
-    
-    if (!size.value) {
-      setFormErrors((prevState) => (
-          { ...prevState, size: "The size is required" }
-        )
-      )
-    }
-    
-    if (!type.value) {
-      setFormErrors((prevState) => (
-          { ...prevState, type: "The type is required" }
-        )
-      )
-    }
+    const form = e.target.elements as HTMLFormControlsCollection
+
+    const name = form.namedItem('name') as HTMLInputElement;
+    const size = form.namedItem('size') as HTMLInputElement;
+    const type = form.namedItem('type') as HTMLInputElement;
+
+    validateForm({name:name.value, size:size.value, type:type.value})
 
     await createProductService('cafe','grande',1)
-
-    // await fetch(`${baseURL}/products`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({})
-    // })
 
     setIsSaving(false)
   }
@@ -59,10 +71,7 @@ const CreateProductPage: NextPage = () => {
   // event blur se gatilla cuando un elemento ha perdido su foco
   const handleBlur = (e:any) => {
     const {name, value} = e.target
-    setFormErrors({
-      ...formErrors, 
-      [name]:value.length ? '' : `The ${name} is required`
-    })
+    validateField({name,value})
   }
   
   return (
