@@ -1,11 +1,14 @@
 import { baseURL } from "@/config"
+import { renderWithProviders } from "@/mocks/renderWithProviders"
 import { server } from "@/mocks/server"
 import CreateProductPage from "@/pages/products/create"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+
 import { rest } from "msw"
 
 // en scope global, se ejecuta para cada test
-beforeEach(() => render(<CreateProductPage/>))
+beforeEach(() => renderWithProviders(<CreateProductPage/>))
 
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
@@ -63,12 +66,12 @@ describe(('when the user submits the form without values'),() => {
     
     // gatillar btn submit
     const btnSubmit = screen.getByRole('button',{name:/submit/i})
-    fireEvent.click(btnSubmit)
+    await userEvent.click(btnSubmit)
 
     // se espera qe esten presentes los msjes de validacion
-    expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
-    expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
-    expect(screen.queryByText(/The type is required/i)).toBeInTheDocument()
+    expect( screen.queryByText(/The name is required/i)).toBeInTheDocument()
+    expect( screen.queryByText(/The size is required/i)).toBeInTheDocument()
+    expect( screen.queryByText(/The type is required/i)).toBeInTheDocument()
     
     await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
   })
@@ -78,24 +81,27 @@ describe(('when the user submits the form without values'),() => {
 //! 4) If the user blurs a field that is empty, then the form must display the
 //! required message for that field.
 describe('when the user blurs an empty field',() => {
-  it('should display the validation message for the input name', () => {
+  it('should display the validation message for the input name', async () => {
     
     // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
     const nameInput = screen.getByLabelText(/name/i)
     fireEvent.blur(nameInput,{ target: {name:'name',value:''}})
     
     // resultado esperado luego del blur
-    expect(screen.queryByText(/The name is required/i)).toBeInTheDocument()
+    expect( await screen.findByText(/The name is required/i)).toBeInTheDocument()
   })
   
-  it('should display the validation message for the input size', () => {
-
+  it('should display the validation message for the input size', async() => {
+    
     // blur recibe 2 params, 1) elemento al cual hacer blur, 2) object event
-    const nameInput = screen.getByLabelText(/size/i)
-    fireEvent.blur(nameInput,{ target: {name:'size',value:''}})
+    const nameInput = screen.getByLabelText(/name/i)
+    const sizeInput = screen.getByLabelText(/size/i)
+
+    await sizeInput.focus();
+    await nameInput.focus(); // al cambiar "focus", inmediatamente el elemento anterior hace blur
     
     // resultado esperado luego del blur
-    expect(screen.queryByText(/The size is required/i)).toBeInTheDocument()
+    expect( await screen.findByText(/The size is required/i)).toBeInTheDocument()
   })
 })
 
@@ -110,11 +116,20 @@ describe('When the user submits the form',() => {
     const btnSubmit = screen.getByRole('button',{name:/submit/i})
     expect(btnSubmit).not.toBeDisabled()
     
+    const nameInput = screen.getByLabelText(/name/i)
+    const sizeInput = screen.getByLabelText(/size/i)
+    const typeSelect = screen.getByTestId('type-select')
+    const optionSelected = screen.queryByText(/clothing/i)
+
+    await userEvent.type(nameInput,'mate')
+    await userEvent.type(sizeInput,'grande')
+    await userEvent.selectOptions(typeSelect,optionSelected!)
+
     // gatillar evento click
-    fireEvent.click(btnSubmit)
+    await userEvent.click(btnSubmit)
     
     // se espera qe el btn este deshabilitado
-    expect(btnSubmit).toBeDisabled()
+    await expect(btnSubmit).toBeDisabled()
       
     await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
   })

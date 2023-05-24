@@ -8,10 +8,24 @@ export const handlers = [
     ctx.status(200)
     )),
     
-    rest.post(`${baseURL}/products/create`, (req,res,ctx) => res(
-      // return res(ctx.status(201))
+  rest.post(`${baseURL}/products/create`, async (req,res,ctx) => {
+  // rest.post(`http://apifalsa:8080/products/create`, async (req,res,ctx) => {
+    const data = await req.json() //equivalente al req.body
+    
+    return res(
       ctx.delay(), // delay necesario para optimo testing
-      ctx.status(200)
-    ))
+      ctx.status(200),
+      ctx.json(data)
+    )
+  }),
+
+  rest.get(`${baseURL}/products`, async (req,res,ctx) => {
+    return res(
+      ctx.delay(), // delay necesario para optimo testing
+      ctx.status(200),
+      ctx.json({test:'matecito a luka!'})
+    )
+  }),
+
 
 ]

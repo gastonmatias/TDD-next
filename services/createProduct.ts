@@ -8,3 +8,7 @@ export const createProductService = async (name: string, size: string, type:stri
         type
     })
 }
+
+export const getProductsService = async (): Promise<void> => {
+    return axios.get(`${baseURL}/products`)
+}

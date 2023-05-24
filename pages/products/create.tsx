@@ -1,63 +1,63 @@
-import {  ChangeEvent, ChangeEventHandler, ReactEventHandler, SyntheticEvent, useState } from "react"
+import {  useEffect, useState } from "react"
 import { NextPage } from "next"
 
-import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
 import axios from "axios";
-import { createProductService } from "@/services/createProduct";
-import { HtmlProps } from "next/dist/shared/lib/html-context";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
 
-// interface IFormCreate{
-//   name: string,
-//   size: string,
-//   type: string  
-// }
-interface IFormCreate{
-  name: string,
-  size: string,
-  type: string  
-}
-interface IValidateField{
-  name:  string,
-  value: string,
-}
+import { createProductService, getProductsService } from "@/services/createProduct";
+import { ProductFormData, productSchema } from "@/validators";
 
 const CreateProductPage: NextPage = () => {
   
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  useEffect(() => {
+    getProducts()
+  },[]);
 
-  const [formErrors, setFormErrors] = useState<IFormCreate>({
-    name:'',
-    size:'',
-    type:'',
-  });
+  const getProducts = async() => {
+    await getProductsService()
+  }
 
-  const {register, handleSubmit, formState:{errors}} = useForm()
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const [name, setName] = useState<string>('');
-  const [size, setSize] = useState<string>('');
-  const [type, setType] = useState<string>('');
+  //! USE FORM
+  const {register, handleSubmit, formState:{errors}} = useForm<ProductFormData>({
+    resolver: yupResolver(productSchema),
+    mode: "onBlur"
+  })
 
-  const onSubmit: SubmitHandler<any> = async (data) => {
+  //! REACT QUERY
+  const mutation = useMutation(({name, size, type}:ProductFormData) => (
+    createProductService(name, size, type)
+    ))
     
-    setIsSaving(true)
+    
+  //! SUBMIT
+  // const onSubmit: SubmitHandler<ProductFormData> = async ({name, size, type}) => {
+  const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
+    mutation.mutate(data,{
+      onError(error){
+        if(axios.isAxiosError(error) && error?.response?.status === 500){
+          setErrorMessage('Unexpected error, please try again')
+      } else{
+          setErrorMessage('The email or password are not correct')
+      }        
+      }
+    })
 
-    console.log(data);
-    const {name, size, type} = data
-    // await createProductService('cafe','grande','1')
-    await createProductService(name, size, type)
+    getProductsService()
+  }
 
-    setIsSaving(false)
-  }
-  
-  // event blur se gatilla cuando un elemento ha perdido su foco
-  const handleBlur = (e:any) => {
-    const {name, value} = e.target
-  }
-  
   return (
     <>
     <Typography variant="h1" color="initial">Create Product</Typography>
+    
+      { ( mutation.isError )  
+          ? <Typography>{errorMessage}</Typography>
+          : null
+      }
     
     <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
@@ -65,7 +65,7 @@ const CreateProductPage: NextPage = () => {
           label="name"
           // name="name"
           // helperText={formErrors.name}
-          helperText={formErrors.name}
+          helperText={errors.name?.message}
           // onBlur={handleBlur}
           {...register("name")}
           />
@@ -74,8 +74,8 @@ const CreateProductPage: NextPage = () => {
           id="size"
           label="size"
           // name="size"
-          helperText={formErrors.size}
-          // onBlur={handleBlur}
+          helperText={errors.size?.message}
+          // onBlur={onBlur}
           {...register("size")}
           />
 
@@ -94,7 +94,6 @@ const CreateProductPage: NextPage = () => {
                 id:'type',
                 "data-testid": 'type-select'
               }}
-              // onChange={}
             >
               <option aria-label="None" value=""></option>
               <option value="electronic">electronic</option>
@@ -102,13 +101,13 @@ const CreateProductPage: NextPage = () => {
               <option value="clothing">clothing</option>
             </Select>
             
-            { formErrors.type && 
-              <FormHelperText>{formErrors.type}</FormHelperText>
+            { errors.type?.message && 
+              <FormHelperText>{errors.type?.message}</FormHelperText>
             }
 
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={mutation.isLoading}
               >
                 Submit
             </Button>
