@@ -9,7 +9,7 @@ import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHel
 
 import { createProductService, getProductsService } from "@/services/createProduct";
 import { ProductFormData, productSchema } from "@/validators";
-import { CREATED_STATUS } from "@/consts/httpStatus";
+import { CREATED_STATUS, INTERNAL_ERROR_STATUS } from "@/consts/httpStatus";
 
 const CreateProductPage: NextPage = () => {
   
@@ -40,7 +40,7 @@ const CreateProductPage: NextPage = () => {
   const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
     await mutation.mutate(data,{
       onError(error){
-        if(axios.isAxiosError(error) && error?.response?.status === 500){
+        if(axios.isAxiosError(error) && error?.response?.status === INTERNAL_ERROR_STATUS){
           setErrorMessage('Unexpected error, please try again')
       } else{
           setErrorMessage('The email or password are not correct')
@@ -58,7 +58,7 @@ const CreateProductPage: NextPage = () => {
           : null
       }
       
-      { ( mutation.data!=undefined && mutation['data']['status'] === 201 )  
+      { ( mutation.data!=undefined && mutation['data']['status'] === CREATED_STATUS )  
           ? <Typography variant="h5">Product Stored successfully!</Typography>
           : null
       }

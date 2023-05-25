@@ -1,11 +1,13 @@
-import { baseURL } from '@/config'
 import {rest} from 'msw'
+
+import { baseURL } from '@/config'
+import { CREATED_STATUS, OK_STATUS } from '@/consts/httpStatus'
 
 export const handlers = [
   // rest.post('/login', (req, res, ctx) => res(
   rest.post(`${baseURL}/login`, (req, res, ctx) => res(
     ctx.delay(), // delay necesario para optimo testing
-    ctx.status(200)
+    ctx.status(OK_STATUS)
     )),
     
   rest.post(`${baseURL}/products/create`, async (req,res,ctx) => {
@@ -14,7 +16,7 @@ export const handlers = [
     
     return res(
       ctx.delay(), // delay necesario para optimo testing
-      ctx.status(200),
+      ctx.status(CREATED_STATUS),
       ctx.json(data)
     )
   }),
@@ -22,7 +24,7 @@ export const handlers = [
   rest.get(`${baseURL}/products`, async (req,res,ctx) => {
     return res(
       ctx.delay(), // delay necesario para optimo testing
-      ctx.status(200),
+      ctx.status(OK_STATUS),
       ctx.json({test:'matecito a luka!'})
     )
   }),
