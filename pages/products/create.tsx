@@ -9,6 +9,7 @@ import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHel
 
 import { createProductService, getProductsService } from "@/services/createProduct";
 import { ProductFormData, productSchema } from "@/validators";
+import { CREATED_STATUS } from "@/consts/httpStatus";
 
 const CreateProductPage: NextPage = () => {
   
@@ -37,7 +38,7 @@ const CreateProductPage: NextPage = () => {
   //! SUBMIT
   // const onSubmit: SubmitHandler<ProductFormData> = async ({name, size, type}) => {
   const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
-    mutation.mutate(data,{
+    await mutation.mutate(data,{
       onError(error){
         if(axios.isAxiosError(error) && error?.response?.status === 500){
           setErrorMessage('Unexpected error, please try again')
@@ -46,16 +47,19 @@ const CreateProductPage: NextPage = () => {
       }        
       }
     })
-
-    getProductsService()
   }
 
   return (
     <>
-    <Typography variant="h1" color="initial">Create Product</Typography>
+    <Typography variant="h3" color="initial">Create Product</Typography>
     
       { ( mutation.isError )  
           ? <Typography>{errorMessage}</Typography>
+          : null
+      }
+      
+      { ( mutation.data!=undefined && mutation['data']['status'] === 201 )  
+          ? <Typography variant="h5">Product Stored successfully!</Typography>
           : null
       }
     
@@ -63,19 +67,14 @@ const CreateProductPage: NextPage = () => {
         <TextField
           id="name"
           label="name"
-          // name="name"
-          // helperText={formErrors.name}
           helperText={errors.name?.message}
-          // onBlur={handleBlur}
           {...register("name")}
           />
 
         <TextField
           id="size"
           label="size"
-          // name="size"
           helperText={errors.size?.message}
-          // onBlur={onBlur}
           {...register("size")}
           />
 
