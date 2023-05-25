@@ -120,6 +120,10 @@ describe('When the user submits the form',() => {
     const sizeInput = screen.getByLabelText(/size/i)
     const typeSelect = screen.getByTestId('type-select')
     const optionSelected = screen.queryByText(/clothing/i)
+    // const messageSuccess = await screen.queryByText(/Product Stored successfully/i)
+    // const messageSuccess = await screen.findByText(/Product Stored successfully/i);
+    // const messageSuccess = screen.findByText(/Product Stored successfully/i);
+    
 
     await userEvent.type(nameInput,'mate')
     await userEvent.type(sizeInput,'grande')
@@ -132,19 +136,40 @@ describe('When the user submits the form',() => {
     await expect(btnSubmit).toBeDisabled()
       
     await waitFor(() => expect(btnSubmit).not.toBeDisabled()) 
+    
   })
-
+  
 })
 
 //! The form must send the data to a backend endpoint service.
 describe('When the user submits the form CORRECTLY', () => {
   //!  In the success path, the form page must display the success message
-  //! “Product stored” and clean the fields values.
-  it('the form must display a success message & clean the fields values', async () => {
+  //! “Product stored”
+  it('the form must display a success message', async () => {
     
+    const btnSubmit = screen.getByRole('button',{name:/submit/i})
     
-
+    const nameInput = screen.getByLabelText(/name/i)
+    const sizeInput = screen.getByLabelText(/size/i)
+    const typeSelect = screen.getByTestId('type-select')
+    const optionSelected = screen.queryByText(/clothing/i)
+    
+    await userEvent.type(nameInput,'mate')
+    await userEvent.type(sizeInput,'grande')
+    await userEvent.selectOptions(typeSelect,optionSelected!)
+    
+    await userEvent.click(btnSubmit)
+    
+    // se espera qe el btn este deshabilitado
+    await expect(btnSubmit).toBeDisabled()
+    
+    await waitFor( () => 
+    expect(
+      screen.queryByText(/Product Stored successfully/i)
+      ).toBeInTheDocument()
+    )
   })
 
-
+  //TODO: In the success path...display message “Product stored” 
+  //TODO: ...and clean the fields values.
 })
