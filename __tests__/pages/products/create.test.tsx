@@ -162,19 +162,19 @@ describe('When the user submits the form CORRECTLY', () => {
   //! “Product stored”
   it('the form must display a success message', async () => {
 
+    const btnSubmit = screen.getByRole('button',{name:/submit/i})
     await fillAndSendProductForm('mate','grande','clothing')
     
-    const btnSubmit = screen.getByRole('button',{name:/submit/i})
     
     // btn deshabilitado mientras hace fetching
     await expect(btnSubmit).toBeDisabled()
     
     // success message
-    await waitFor( () => 
-    expect(
-      screen.queryByText(/Product Stored successfully/i)
+    await waitFor( async () => 
+      expect(
+      await  screen.queryByText(/Product Stored successfully/i)
       ).toBeInTheDocument()
-      )
+    )
       
     // btn nuevamente habilitado
     await expect(btnSubmit).not.toBeDisabled()

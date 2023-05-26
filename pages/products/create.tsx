@@ -31,7 +31,7 @@ const CreateProductPage: NextPage = () => {
   })
   
   useEffect(() => {
-    if (formState.isSubmitSuccessful) {
+    if (formState.isSubmitSuccessful && mutation.isSuccess) {
       reset()
     }
   }, [formState, reset]);
@@ -75,6 +75,7 @@ const CreateProductPage: NextPage = () => {
           id="name"
           label="name"
           helperText={errors.name?.message}
+          disabled={mutation.isLoading}
           {...register("name")}
           />
 
@@ -82,6 +83,7 @@ const CreateProductPage: NextPage = () => {
           id="size"
           label="size"
           helperText={errors.size?.message}
+          disabled={mutation.isLoading}
           {...register("size")}
           />
 
@@ -94,6 +96,7 @@ const CreateProductPage: NextPage = () => {
               labelId="type"
               id="type"
               label="Type"
+              disabled={mutation.isLoading}
               {...register("type")}
               inputProps={{
                 name: 'type',

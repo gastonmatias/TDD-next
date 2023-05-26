@@ -2,6 +2,7 @@ import {rest} from 'msw'
 
 import { baseURL } from '@/config'
 import { BAD_REQUEST_STATUS, CREATED_STATUS, OK_STATUS } from '@/consts/httpStatus'
+import { INTERNAL_ERROR_STATUS } from '@/consts/httpStatus'
 
 export const handlers = [
   // rest.post('/login', (req, res, ctx) => res(
@@ -15,7 +16,7 @@ export const handlers = [
     
     if (name && size && type) {
       return res(
-        ctx.delay(8000), // delay necesario para optimo testing
+        ctx.delay(), // random realistic server response time
         ctx.status(CREATED_STATUS),
         ctx.json({name,size, type})// para que resp del MSW retorne tb los datos enviados
       )
