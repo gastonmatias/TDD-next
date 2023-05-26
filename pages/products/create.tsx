@@ -17,17 +17,24 @@ const CreateProductPage: NextPage = () => {
     getProducts()
   },[]);
 
+  
   const getProducts = async() => {
     await getProductsService()
   }
-
+  
   const [errorMessage, setErrorMessage] = useState<string>('');
-
+  
   //! USE FORM
-  const {register, handleSubmit, formState:{errors}} = useForm<ProductFormData>({
+  const {register, handleSubmit, reset, formState, formState:{errors}} = useForm<ProductFormData>({
     resolver: yupResolver(productSchema),
     mode: "onBlur"
   })
+  
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      reset()
+    }
+  }, [formState, reset]);
 
   //! REACT QUERY
   const mutation = useMutation(({name, size, type}:ProductFormData) => (
