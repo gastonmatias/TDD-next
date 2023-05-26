@@ -170,6 +170,7 @@ describe('When the user submits the form CORRECTLY', () => {
     )
   })
 
+  //TODO: ...I'll do this TODAY, REALLY!
   //TODO: In the success path...display message “Product stored” 
   //TODO: ...and clean the fields values.
 })
