@@ -48,7 +48,7 @@ const CreateProductPage: NextPage = () => {
     await mutation.mutate(data,{
       onError(error){
         if(axios.isAxiosError(error) && error?.response?.status === INTERNAL_ERROR_STATUS){
-          setErrorMessage('Unexpected error, please try again')
+          setErrorMessage('Oops! Unexpected error, please try again')
       } else{
           setErrorMessage('The email or password are not correct')
       }        
