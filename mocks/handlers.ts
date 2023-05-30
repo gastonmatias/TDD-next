@@ -14,10 +14,14 @@ export const handlers = [
   rest.post(`${baseURL}/products/create`, async (req,res,ctx) => {
     const {name,size, type} = await req.json() //equivalente al req.body
     
+    // return res.networkError('Failed to connect') // para testear error conexion
+
     if (name && size && type) {
       return res(
         ctx.delay(), // random realistic server response time
         ctx.status(CREATED_STATUS),
+        // ctx.status(INTERNAL_ERROR_STATUS), // para test error 500
+        // ctx.status(BAD_REQUEST_STATUS), // para test error 400
         ctx.json({name,size, type})// para que resp del MSW retorne tb los datos enviados
       )
     } else{

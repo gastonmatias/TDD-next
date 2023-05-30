@@ -54,7 +54,7 @@ const CreateProductPage: NextPage = () => {
           setErrorMessage('The form is invalid, the fields: name, size and type are required!')
         } 
         else{
-          setErrorMessage('The email or password are not correct')
+          setErrorMessage('Connection error, please try later')
         }        
       }
     })
