@@ -219,6 +219,8 @@ describe('When the user submits the form CORRECTLY', () => {
   })
 })
 
+//! 7) In a server error, the form page must display the error message 
+//! “Unexpected error, please try again
 describe("when user submits the form & server returns an unexpected error",() => {
   test('should render error message 500', async () => {
     
@@ -236,4 +238,34 @@ describe("when user submits the form & server returns an unexpected error",() =>
     )
 
   })
+})
+
+//! 8) In the invalid request path, the form page must display the error message
+//! _“The form is invalid, the fields [field1...fieldN] are required”_.
+describe("when user submits the form & server returns an invalid request",() => {
+  test('should display error message 400', async () => {
+  
+    // setear error de server 400
+    await mockServerWithError(400)
+    
+    // rellenado de form CORRECTO (deberia ser incorrecto),
+    // PERO se interpondrá el error 400 msw.
+    // este paso SOLO es necesario para gatillar el onSubmit, suponiendo que
+    // el usuario pudo saltarse las validaciones del form
+    await fillAndSendProductForm('termolar','grande','electronic')
+    
+    
+    // message unexpected error
+    await waitFor( () => 
+      expect(
+        screen.queryByText(/The form is invalid, the fields: name, size and type are required!/i)
+      ).toBeInTheDocument()
+    )
+  })
+})
+
+//! 9) In the not found service path, the form page must display the message
+//! _“Connection error, please try later”_.
+describe("",() => {
+
 })
