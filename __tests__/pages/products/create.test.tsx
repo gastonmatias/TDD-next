@@ -30,8 +30,14 @@ const mockServerWithError = (statusCode:number) => {
     rest.post(`${baseURL}/products/create`,(req,res,ctx) => res(
       ctx.delay(),
       ctx.status(statusCode)
-    ))
-  )
+      ))
+      )
+    }
+    
+const mockServerNetworkError = () => {
+  rest.post(`${baseURL}/products/create`,(req,res,ctx) => (
+    res.networkError('Connection error, please try later')
+  ))
 }
 
 //!  tests for user history "Store Form App"
@@ -266,6 +272,15 @@ describe("when user submits the form & server returns an invalid request",() => 
 
 //! 9) In the not found service path, the form page must display the message
 //! _“Connection error, please try later”_.
-describe("",() => {
+describe("when connection fails", () => {
+  
+  test('should display message connection error', async () => {
+    await mockServerNetworkError()
 
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Connection error, please try later/i)
+      )
+    })
+  })
 })
