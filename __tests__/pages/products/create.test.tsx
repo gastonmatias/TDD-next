@@ -4,8 +4,8 @@ import { server } from "@/mocks/server"
 import CreateProductPage from "@/pages/products/create"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-
 import { rest } from "msw"
+
 
 // en scope global, se ejecuta para cada test
 beforeEach(() => renderWithProviders(<CreateProductPage/>))
@@ -23,6 +23,15 @@ const fillAndSendProductForm = async (name:string, size:string, type:string) => 
   await userEvent.selectOptions(typeSelect,optionSelected!)
   
   await userEvent.click(btnSubmit)
+}
+
+const mockServerWithError = (statusCode:number) => {
+  server.use(// .use(): Prepends given request handlers to the current worker instance
+    rest.post(`${baseURL}/products/create`,(req,res,ctx) => res(
+      ctx.delay(),
+      ctx.status(statusCode)
+    ))
+  )
 }
 
 //!  tests for user history "Store Form App"
@@ -158,7 +167,7 @@ describe('When the user submits the form',() => {
 
 //! The form must send the data to a backend endpoint service.
 describe('When the user submits the form CORRECTLY', () => {
-  //!  In the success path, the form page must display the success message
+  //! 6.1) In the success path, the form page must display the success message
   //! “Product stored”
   it('the form must display a success message', async () => {
 
@@ -180,6 +189,7 @@ describe('When the user submits the form CORRECTLY', () => {
     await expect(btnSubmit).not.toBeDisabled()
   })
   
+  //! 6.2)
   it('the form must be cleaned', async () => {
     
     const btnSubmit = screen.getByRole('button',{name:/submit/i})
@@ -198,7 +208,7 @@ describe('When the user submits the form CORRECTLY', () => {
         screen.queryByText(/Product Stored successfully/i)
       ).toBeInTheDocument()
     )
-      
+    
     // form cleaned!
     await expect(nameInput).toHaveValue('')
     await expect(sizeInput).toHaveValue('')
@@ -206,5 +216,24 @@ describe('When the user submits the form CORRECTLY', () => {
     
     // btn nuevamente habilitado
     await expect(btnSubmit).not.toBeDisabled()
+  })
+})
+
+describe("when user submits the form & server returns an unexpected error",() => {
+  test('should render error message 500', async () => {
+    
+    // setear error de server 500
+    await mockServerWithError(500)
+
+    // rellenado de form correcto
+    await fillAndSendProductForm('termolar','grande','electronic')
+    
+    // message unexpected error
+    await waitFor( () => 
+      expect(
+        screen.queryByText(/unexpected error/i)
+      ).toBeInTheDocument()
+    )
+
   })
 })
