@@ -9,7 +9,7 @@ import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHel
 
 import { createProductService, getProductsService } from "@/services/createProduct";
 import { ProductFormData, productSchema } from "@/validators";
-import { CREATED_STATUS, INTERNAL_ERROR_STATUS } from "@/consts/httpStatus";
+import { BAD_REQUEST_STATUS, CREATED_STATUS, INTERNAL_ERROR_STATUS } from "@/consts/httpStatus";
 
 const CreateProductPage: NextPage = () => {
   
@@ -49,9 +49,13 @@ const CreateProductPage: NextPage = () => {
       onError(error){
         if(axios.isAxiosError(error) && error?.response?.status === INTERNAL_ERROR_STATUS){
           setErrorMessage('Oops! Unexpected error, please try again')
-      } else{
+        } 
+        else if(axios.isAxiosError(error) && error?.response?.status === BAD_REQUEST_STATUS){
+          setErrorMessage('The form is invalid, the fields: name, size and type are required!')
+        } 
+        else{
           setErrorMessage('The email or password are not correct')
-      }        
+        }        
       }
     })
   }
