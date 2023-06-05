@@ -1,20 +1,30 @@
 import { NextPage } from "next"
 import Typography from '@mui/material/Typography'
-import { TextField, Button } from "@mui/material"
+import { TextField, Button, Container, Grid } from "@mui/material"
 
 const GithubSearchPage:NextPage = () => {
   return (
     <>
-    <Typography variant="h1" color="initial">
+    <Container>
+
+    <Typography variant="h2" color="white" sx={{my:3}}>
         Github repositories List
     </Typography>
 
-    <TextField id="filterBy" label="Filter by name" variant="outlined" />
-    
-    <Button variant="text" color="primary">
-      Search
-    </Button>
+    <Grid container spacing={2} justifyContent='space-between'>
 
+        <Grid item md={6} xs={12}>
+            <TextField fullWidth id="filterBy" label="Filter by name" variant="outlined" />
+        </Grid>
+
+        <Grid item md={3} xs={12} sx={{display:'flex'}}>{/* flex para el stretch default */}
+            <Button fullWidth variant="contained" color="primary">
+              Search
+            </Button>
+        </Grid>
+    </Grid>
+
+    </Container>
     </>
   )
 }
