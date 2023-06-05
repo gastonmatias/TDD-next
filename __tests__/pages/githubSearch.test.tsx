@@ -3,15 +3,16 @@ import { render, screen } from "@testing-library/react"
 
 describe('when the github page is mounted',() => {
     
-    //There must be a github repositories list page.
+    beforeEach(() => render(<GithubSearchPage/>))
+
+    //!1) There must be a github repositories list page.
     test('should display the title', () => {
-        render(<GithubSearchPage/>)
         
         expect(screen.getByRole('heading',{name:/Github repositories List/i})).toBeInTheDocument()
     })
     
+    //! 2.1)
     test('should be an input text "filter by"', () => {
-        render(<GithubSearchPage/>)
 
         expect(screen.getByLabelText(/filter/i,{selector:'input'})).toBeInTheDocument()
     })
