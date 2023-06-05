@@ -17,11 +17,19 @@ describe('when the github page is mounted',() => {
         expect(screen.getByLabelText(/filter/i,{selector:'input'})).toBeInTheDocument()
     })
 
+    //! 2.2)
     test('should be a search button', () => {
         const searchBtn = screen.getByRole('button',{name:/search/i})
 
         expect(searchBtn).toBeInTheDocument()
 
+    })
+
+    test('should be an initial message "provide a search option" & click the btn', () => {
+      
+        const message = screen.getByText(/Please provide a search option and click in the search button/i)
+        
+        expect(message).toBeInTheDocument()
     })
 
 })
