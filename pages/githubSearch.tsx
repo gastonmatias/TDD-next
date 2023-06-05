@@ -14,7 +14,11 @@ const GithubSearchPage:NextPage = () => {
     <Grid container spacing={2} justifyContent='space-between'>
 
         <Grid item md={6} xs={12}>
-            <TextField fullWidth id="filterBy" label="Filter by name" variant="outlined" />
+            <TextField 
+                fullWidth id="filterBy" 
+                label="Filter by name" 
+                variant="outlined" 
+                />
         </Grid>
 
         <Grid item md={3} xs={12} sx={{display:'flex'}}>{/* flex para el stretch default */}
@@ -22,6 +26,10 @@ const GithubSearchPage:NextPage = () => {
               Search
             </Button>
         </Grid>
+
+        <Typography variant="h5" color="gray">
+            Please provide a search option and click in the search button
+        </Typography>
     </Grid>
 
     </Container>
