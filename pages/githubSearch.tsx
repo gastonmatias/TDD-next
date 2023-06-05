@@ -1,6 +1,6 @@
 import { NextPage } from "next"
 import Typography from '@mui/material/Typography'
-import { TextField } from "@mui/material"
+import { TextField, Button } from "@mui/material"
 
 const GithubSearchPage:NextPage = () => {
   return (
@@ -11,6 +11,9 @@ const GithubSearchPage:NextPage = () => {
 
     <TextField id="filterBy" label="Filter by name" variant="outlined" />
     
+    <Button variant="text" color="primary">
+      Search
+    </Button>
 
     </>
   )
