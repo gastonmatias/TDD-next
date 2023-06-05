@@ -17,4 +17,11 @@ describe('when the github page is mounted',() => {
         expect(screen.getByLabelText(/filter/i,{selector:'input'})).toBeInTheDocument()
     })
 
+    test('should be a search button', () => {
+        const searchBtn = screen.getByRole('button',{name:/search/i})
+
+        expect(searchBtn).toBeInTheDocument()
+
+    })
+
 })
