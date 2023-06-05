@@ -10,5 +10,10 @@ describe('when the github page is mounted',() => {
         expect(screen.getByRole('heading',{name:/Github repositories List/i})).toBeInTheDocument()
     })
     
+    test('should be an input text "filter by"', () => {
+        render(<GithubSearchPage/>)
+
+        expect(screen.getByLabelText(/filter/i,{selector:'input'})).toBeInTheDocument()
+    })
 
 })
