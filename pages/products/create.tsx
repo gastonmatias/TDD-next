@@ -17,17 +17,24 @@ const CreateProductPage: NextPage = () => {
     getProducts()
   },[]);
 
+  
   const getProducts = async() => {
     await getProductsService()
   }
-
+  
   const [errorMessage, setErrorMessage] = useState<string>('');
-
+  
   //! USE FORM
-  const {register, handleSubmit, formState:{errors}} = useForm<ProductFormData>({
+  const {register, handleSubmit, reset, formState, formState:{errors}} = useForm<ProductFormData>({
     resolver: yupResolver(productSchema),
     mode: "onBlur"
   })
+  
+  useEffect(() => {
+    if (formState.isSubmitSuccessful && mutation.isSuccess) {
+      reset()
+    }
+  }, [formState, reset]);
 
   //! REACT QUERY
   const mutation = useMutation(({name, size, type}:ProductFormData) => (
@@ -68,6 +75,7 @@ const CreateProductPage: NextPage = () => {
           id="name"
           label="name"
           helperText={errors.name?.message}
+          disabled={mutation.isLoading}
           {...register("name")}
           />
 
@@ -75,6 +83,7 @@ const CreateProductPage: NextPage = () => {
           id="size"
           label="size"
           helperText={errors.size?.message}
+          disabled={mutation.isLoading}
           {...register("size")}
           />
 
@@ -87,6 +96,7 @@ const CreateProductPage: NextPage = () => {
               labelId="type"
               id="type"
               label="Type"
+              disabled={mutation.isLoading}
               {...register("type")}
               inputProps={{
                 name: 'type',

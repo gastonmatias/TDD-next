@@ -10,6 +10,21 @@ import { rest } from "msw"
 // en scope global, se ejecuta para cada test
 beforeEach(() => renderWithProviders(<CreateProductPage/>))
 
+const fillAndSendProductForm = async (name:string, size:string, type:string) => {
+  const btnSubmit = screen.getByRole('button',{name:/submit/i})
+  const nameInput = screen.getByLabelText(/name/i)
+  const sizeInput = screen.getByLabelText(/size/i)
+  const typeSelect = screen.getByTestId('type-select')
+  const regex = new RegExp(type, "i");
+  const optionSelected = screen.queryByText(regex)
+  
+  await userEvent.type(nameInput,name)
+  await userEvent.type(sizeInput,size)
+  await userEvent.selectOptions(typeSelect,optionSelected!)
+  
+  await userEvent.click(btnSubmit)
+}
+
 //!  tests for user history "Store Form App"
 describe('when the form is mounted', () => {
     //! 1) Acceptance Criteria (AC): There must be a create product form page.----
@@ -146,31 +161,50 @@ describe('When the user submits the form CORRECTLY', () => {
   //!  In the success path, the form page must display the success message
   //! “Product stored”
   it('the form must display a success message', async () => {
+
+    const btnSubmit = screen.getByRole('button',{name:/submit/i})
+    await fillAndSendProductForm('mate','grande','clothing')
+    
+    
+    // btn deshabilitado mientras hace fetching
+    await expect(btnSubmit).toBeDisabled()
+    
+    // success message
+    await waitFor( async () => 
+      expect(
+      await  screen.queryByText(/Product Stored successfully/i)
+      ).toBeInTheDocument()
+    )
+      
+    // btn nuevamente habilitado
+    await expect(btnSubmit).not.toBeDisabled()
+  })
+  
+  it('the form must be cleaned', async () => {
     
     const btnSubmit = screen.getByRole('button',{name:/submit/i})
-    
     const nameInput = screen.getByLabelText(/name/i)
     const sizeInput = screen.getByLabelText(/size/i)
     const typeSelect = screen.getByTestId('type-select')
-    const optionSelected = screen.queryByText(/clothing/i)
     
-    await userEvent.type(nameInput,'mate')
-    await userEvent.type(sizeInput,'grande')
-    await userEvent.selectOptions(typeSelect,optionSelected!)
+    await fillAndSendProductForm('Jelly2','pequeño','electronic')
     
-    await userEvent.click(btnSubmit)
-    
-    // se espera qe el btn este deshabilitado
+    // btn deshabilitado mientras fetching
     await expect(btnSubmit).toBeDisabled()
     
+    // message success
     await waitFor( () => 
-    expect(
-      screen.queryByText(/Product Stored successfully/i)
+      expect(
+        screen.queryByText(/Product Stored successfully/i)
       ).toBeInTheDocument()
     )
+      
+    // form cleaned!
+    await expect(nameInput).toHaveValue('')
+    await expect(sizeInput).toHaveValue('')
+    await expect(typeSelect).toHaveValue('')
+    
+    // btn nuevamente habilitado
+    await expect(btnSubmit).not.toBeDisabled()
   })
-
-  //TODO: ...I'll do this TODAY, REALLY!
-  //TODO: In the success path...display message “Product stored” 
-  //TODO: ...and clean the fields values.
 })
