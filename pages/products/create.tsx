@@ -5,11 +5,11 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText } from "@mui/material"
+import { Typography, TextField, FormControl, InputLabel, Select, Button, FormHelperText, Container, Grid } from "@mui/material"
 
 import { createProductService, getProductsService } from "@/services/createProduct";
 import { ProductFormData, productSchema } from "@/validators";
-import { CREATED_STATUS, INTERNAL_ERROR_STATUS } from "@/consts/httpStatus";
+import { BAD_REQUEST_STATUS, CREATED_STATUS, INTERNAL_ERROR_STATUS } from "@/consts/httpStatus";
 
 const CreateProductPage: NextPage = () => {
   
@@ -17,17 +17,24 @@ const CreateProductPage: NextPage = () => {
     getProducts()
   },[]);
 
+  
   const getProducts = async() => {
     await getProductsService()
   }
-
+  
   const [errorMessage, setErrorMessage] = useState<string>('');
-
+  
   //! USE FORM
-  const {register, handleSubmit, formState:{errors}} = useForm<ProductFormData>({
+  const {register, handleSubmit, reset, formState, formState:{errors}} = useForm<ProductFormData>({
     resolver: yupResolver(productSchema),
     mode: "onBlur"
   })
+  
+  useEffect(() => {
+    if (formState.isSubmitSuccessful && mutation.isSuccess) {
+      reset()
+    }
+  }, [formState, reset]);
 
   //! REACT QUERY
   const mutation = useMutation(({name, size, type}:ProductFormData) => (
@@ -41,78 +48,105 @@ const CreateProductPage: NextPage = () => {
     await mutation.mutate(data,{
       onError(error){
         if(axios.isAxiosError(error) && error?.response?.status === INTERNAL_ERROR_STATUS){
-          setErrorMessage('Unexpected error, please try again')
-      } else{
-          setErrorMessage('The email or password are not correct')
-      }        
+          setErrorMessage('Oops! Unexpected error, please try again')
+        } 
+        else if(axios.isAxiosError(error) && error?.response?.status === BAD_REQUEST_STATUS){
+          setErrorMessage('The form is invalid, the fields: name, size and type are required!')
+        } 
+        else{
+          setErrorMessage('Connection error, please try later')
+        }        
       }
     })
   }
 
   return (
     <>
-    <Typography variant="h3" color="initial">Create Product</Typography>
+    <Container maxWidth='xs' sx={{mt:5}}>
+    <Typography variant="h3" color="white">Create Product</Typography>
     
       { ( mutation.isError )  
-          ? <Typography>{errorMessage}</Typography>
+          ? <Typography sx={{mb:2}} variant="h5">{errorMessage}</Typography>
           : null
       }
       
       { ( mutation.data!=undefined && mutation['data']['status'] === CREATED_STATUS )  
-          ? <Typography variant="h5">Product Stored successfully!</Typography>
+          ? <Typography sx={{mb:2}} variant="h5">Product Stored successfully!</Typography>
           : null
       }
     
-    <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          id="name"
-          label="name"
-          helperText={errors.name?.message}
-          {...register("name")}
-          />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container>
 
-        <TextField
-          id="size"
-          label="size"
-          helperText={errors.size?.message}
-          {...register("size")}
-          />
+          <Grid item xs={12}>
+          <TextField
+            id="name"
+            fullWidth
+            label="name"
+            helperText={errors.name?.message}
+            disabled={mutation.isLoading}
+            {...register("name")}
+            error={!!errors.name?.message}
+            />
+          </Grid>        
 
-        <FormControl fullWidth>
-            <InputLabel htmlFor="type" id="type">Type</InputLabel>
+          <Grid item xs={12}>
+          <TextField
+            id="size"
+            fullWidth
+            label="size"
+            helperText={errors.size?.message}
+            disabled={mutation.isLoading}
+            error={!!errors.size?.message}
+            {...register("size")}
+            />
+          </Grid>   
 
-            <Select
-              native //! IMPORTANTE PARA QUE JEST RECONOZCA LOS OPTIONS
-              aria-labelledby="type"
-              labelId="type"
-              id="type"
-              label="Type"
-              {...register("type")}
-              inputProps={{
-                name: 'type',
-                id:'type',
-                "data-testid": 'type-select'
-              }}
-            >
-              <option aria-label="None" value=""></option>
-              <option value="electronic">electronic</option>
-              <option value="furniture">furniture</option>
-              <option value="clothing">clothing</option>
-            </Select>
-            
-            { errors.type?.message && 
-              <FormHelperText>{errors.type?.message}</FormHelperText>
-            }
+          <Grid item xs={12}>
+          <FormControl fullWidth>
+              <InputLabel htmlFor="type" id="type">Type</InputLabel>
 
+              <Select
+                native //! IMPORTANTE PARA QUE JEST RECONOZCA LOS OPTIONS
+                aria-labelledby="type"
+                labelId="type"
+                id="type"
+                label="Type"
+                disabled={mutation.isLoading}
+                {...register("type")}
+                error={!!errors.type}
+                inputProps={{
+                  name: 'type',
+                  id:'type',
+                  "data-testid": 'type-select'
+                }}
+              >
+                <option aria-label="None" value=""></option>
+                <option value="electronic">electronic</option>
+                <option value="furniture">furniture</option>
+                <option value="clothing">clothing</option>
+              </Select>
+              
+              { errors.type?.message && 
+                <FormHelperText>{errors.type?.message}</FormHelperText>
+              }
+          </FormControl>
+          </Grid>    
+
+          <Grid item xs={12} sx={{mt:2}}>
             <Button
               type="submit"
               disabled={mutation.isLoading}
-              >
-                Submit
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              Submit
             </Button>
-        </FormControl>
-
-    </form>
+          </Grid>
+        </Grid>
+      </form>
+    </Container>
     </>
   )
 }

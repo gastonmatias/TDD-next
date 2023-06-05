@@ -21,11 +21,11 @@ administrating my products.
     data. After fetching, the submit button does not have to be disabled.
   - 6) In the success path, the form page must display the success message
     _“Product stored”_ and clean the fields values.
-  - In a server error, the form page must display the error message _“Unexpected
+  - 7) In a server error, the form page must display the error message _“Unexpected
     error, please try again”_.
-  - In the invalid request path, the form page must display the error message
+  - 8) In the invalid request path, the form page must display the error message
     _“The form is invalid, the fields [field1...fieldN] are required”_.
-  - In the not found service path, the form page must display the message
+  - 9) In the not found service path, the form page must display the message
     _“Connection error, please try later”_.
 
 ---
