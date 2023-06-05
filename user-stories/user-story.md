@@ -13,11 +13,11 @@ of inspiring me to be better professional.
   - 2.2) The Search Button.
 
 - 3) The results section should contain:
-  - Before the first search, show the initial state message “Please provide a
+  -3.1) Before the first search, show the initial state message “Please provide a
     search option and click in the search button”.
-  - The search button should be disabled until the search is done.
-  - The data should be displayed as a sticky table.
-  - The header table should contain: Repository, stars, forks, open issues and
+  - 3.2) The search button should be disabled until the search is done.
+  - 3.3) The data should be displayed as a sticky table.
+  - 3.4) The header table should contain: Repository, stars, forks, open issues and
     updated at
   - Each result should have: owner avatar image, name, stars, updated at, forks,
     open issues. It should have a link that opens in a new tab the github

@@ -1,9 +1,19 @@
 import { NextPage } from "next"
 import Typography from '@mui/material/Typography'
 import { TextField, Button, Container, Grid, Box } from "@mui/material"
+import { useState } from "react";
 
 const GithubSearchPage:NextPage = () => {
-  return (
+
+    const [isSearching, setIsSearching] = useState(false);
+
+    const handleSearchClick = async () => {
+        setIsSearching(true)
+        await Promise.resolve()
+        setIsSearching(false)
+    }
+
+    return (
     <>
     <Container>
         <Typography variant="h2" color="white" sx={{my:3}}>
@@ -21,7 +31,13 @@ const GithubSearchPage:NextPage = () => {
             </Grid>
 
             <Grid item md={3} xs={12} sx={{display:'flex'}}>{/* flex para el stretch default */}
-                <Button fullWidth variant="contained" color="primary">
+                <Button 
+                    fullWidth 
+                    variant="contained" 
+                    color="primary"
+                    disabled={isSearching}
+                    onClick={handleSearchClick}
+                    >
                   Search
                 </Button>
             </Grid>
